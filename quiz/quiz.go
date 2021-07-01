@@ -11,9 +11,15 @@ import (
 )
 
 func main() {
-	quiz_dir := "./problems.csv"
+	// read command line flag (time limit)
+	quiz_dir := flag.String("csv", "./problems.csv",
+		"a csv file in the form of [question,answer]")
+	var timelimit int
+	flag.IntVar(&timelimit, "limit", 30, 
+		"Input an int to set the time limit to the quiz in seconds")
+	flag.Parse()
 	// open quiz file
-	quiz_file, err := os.Open(quiz_dir)
+	quiz_file, err := os.Open(*quiz_dir)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -39,13 +45,6 @@ func main() {
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
-
-	// read command line flag (time limit)
-	//var flag_timelimit int
-	var timelimit int
-	flag.IntVar(&timelimit, "limit", 30, 
-		"Input an int to set the time limit to the quiz in seconds")
-	flag.Parse()
 
 	// define vars related to quiz
 	num_questions := len(questions)
