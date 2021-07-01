@@ -61,12 +61,12 @@ func main() {
 	go func() {
 		fmt.Println("--- The Quiz has Started ---")
 
-		for i := 0; i < num_questions; i++ {
-			fmt.Printf("%s = ", problems[i].question)
+		for _, p := range problems {
+			fmt.Printf("%s = ", p.question)
 			var answer_try string
 			fmt.Scanln(&answer_try)
 			//fmt.Printf("%s\n", answer_try)
-			if answer_try == problems[i].answer {
+			if answer_try == p.answer {
 				correct_count++
 			}
 		}
