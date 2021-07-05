@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"html/template"
 	"io"
+	"log"
 	"net/http"
+	"strings"
 )
 
 type Story map[string]Chapter
@@ -65,9 +67,20 @@ type handler struct {
 // specify whatever needs to be done by the web app in this func
 // in this case, ServeHTTP needs to parse the html template, and execute it
 func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	tpl := template.Must(template.New("").Parse(defaultHandlerTmpl))
-	err := tpl.Execute(w, h.s["intro"])
-	if err != nil {
-		panic(err)
+	path := strings.TrimSpace(r.URL.Path)
+	if path == "" || path == "/" {
+		path = "/intro"
 	}
+	path = path[1:]
+
+	if chapter, ok := h.s[path]; ok {
+		tpl := template.Must(template.New("").Parse(defaultHandlerTmpl))
+		err := tpl.Execute(w, chapter)
+		if err != nil {
+			log.Printf("%v\n", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+	http.Error(w, "Chapter Not Found", http.StatusNotFound)
 }
